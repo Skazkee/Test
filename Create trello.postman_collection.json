@@ -1,0 +1,437 @@
+{
+	"info": {
+		"_postman_id": "fb4d4be8-f583-4fa4-90f9-488efa6dbd07",
+		"name": "Create trello",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12723182"
+	},
+	"item": [
+		{
+			"name": "Create Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const response=pm.response.json();\r",
+							"\r",
+							"pm.test(\"boardName\", function(){\r",
+							"    pm.expect(response.name).to.eql(pm.environment.get(\"boardName\"))\r",
+							"    pm.expect(response.closed).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Board should be private\", function () {\r",
+							"    pm.expect(response.prefs.permissionLevel).to.eql(\"private\");\r",
+							"});\r",
+							"\r",
+							"console.log(response);\r",
+							"\r",
+							"pm.environment.set(\"boardId\", response.id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Use currentBoardNumber to store the board number\r",
+							"var currentBoardNumber = pm.environment.get(\"currentBoardNumber\");\r",
+							"\r",
+							"\r",
+							"// Check if currentBoardNumber is already defined \r",
+							"if (currentBoardNumber) {\r",
+							"    currentBoardNumber++; // increment\r",
+							"} else {\r",
+							"    currentBoardNumber = 1; // start from 1\r",
+							"}\r",
+							"\r",
+							"\r",
+							"var boardName = \"My board \" + currentBoardNumber;\r",
+							"\r",
+							"// Set the boardName for the request\r",
+							"pm.environment.set(\"boardName\", boardName);\r",
+							"\r",
+							"// Set the currentBoardNumber for future requests\r",
+							"pm.environment.set(\"currentBoardNumber\", currentBoardNumber);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/1/boards/?key={{MyKey}}&token={{MyToken}}&name={{boardName}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						""
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{MyKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{MyToken}}"
+						},
+						{
+							"key": "name",
+							"value": "{{boardName}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create List TODO",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    pm.expect(response.name).to.eql(\"TODO\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    pm.expect(response.closed).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"List was Created inside the board\",function(){\r",
+							"    pm.expect(response.idBoard).to.eql(pm.environment.get(\"boardId\"))\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"ListToDo\", response.id);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/1/lists?name=TODO&idBoard={{boardId}}&key={{MyKey}}&token={{MyToken}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"1",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "TODO"
+						},
+						{
+							"key": "idBoard",
+							"value": "{{boardId}}"
+						},
+						{
+							"key": "key",
+							"value": "{{MyKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{MyToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create List DONE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var response = pm.response.json();\r",
+							"\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    pm.expect(response.name).to.eql(\"DONE\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    pm.expect(response.closed).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    pm.expect(response.idBoard).to.eql(pm.environment.get(\"boardId\"));\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"ListDONE\", response.id);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/1/lists?name=DONE&idBoard={{boardId}}&key={{MyKey}}&token={{MyToken}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"1",
+						"lists"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "DONE"
+						},
+						{
+							"key": "idBoard",
+							"value": "{{boardId}}"
+						},
+						{
+							"key": "key",
+							"value": "{{MyKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{MyToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a new Card",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var response = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    pm.expect(response.name).to.eql(\"Learn Postman\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    pm.expect(response.closed).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    pm.expect(response.idList).to.eql(pm.environment.get(\"ListToDo\"));\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Your test Votes\", function () {\r",
+							"    pm.expect(response.badges.votes).to.eql(0);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Attachments\", function () {\r",
+							"    pm.expect(response.badges.attachments).to.eql(0);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"Card\", response.id);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/1/cards?idList={{ListToDo}}&name=Learn Postman&key={{MyKey}}&token={{MyToken}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"1",
+						"cards"
+					],
+					"query": [
+						{
+							"key": "idList",
+							"value": "{{ListToDo}}"
+						},
+						{
+							"key": "name",
+							"value": "Learn Postman"
+						},
+						{
+							"key": "key",
+							"value": "{{MyKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{MyToken}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Move Card to DONE",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var response = pm.response.json();\r",
+							"\r",
+							"\r",
+							"pm.test(\"Learn postman\", function () {\r",
+							"    pm.expect(response.name).to.eql(\"Learn Postman\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Done List\", function () {\r",
+							"    pm.expect(response.idList).to.eql(pm.environment.get(\"ListDONE\"));\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/1/cards/:id?idList={{ListDONE}}&key={{MyKey}}&token={{MyToken}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"1",
+						"cards",
+						":id"
+					],
+					"query": [
+						{
+							"key": "idList",
+							"value": "{{ListDONE}}"
+						},
+						{
+							"key": "key",
+							"value": "{{MyKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{MyToken}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{Card}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.environment.clear();\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/1/boards/:id?key={{MyKey}}&token={{MyToken}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"1",
+						"boards",
+						":id"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{MyKey}}"
+						},
+						{
+							"key": "token",
+							"value": "{{MyToken}}"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{boardId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
